@@ -1,5 +1,19 @@
-/* REXX */
-
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 01/PART 2<  "
+say ""
+/*------------------------------------------------*/
 
 "ALLOC FI(IN) DA('ZDO.AOC2020.D01.INPUT') SHR"
 "EXECIO * DISKR IN (STEM entries. FINIS"
@@ -7,9 +21,13 @@
 
 
 
+
 /* Let's keep tab on performance :) */
+timertime = time('E')
+
 tries = 0
 maxtries = entries.0 * entries.0 * entries.0
+say "Trying a max of "maxtries" tries"
 do a = 1 to entries.0
   if entries.a > 2020 then iterate
   do i = 1 to entries.0
@@ -18,14 +36,16 @@ do a = 1 to entries.0
     if entries.i > 2020 then iterate
     do j = 1 to entries.0
       if j = i then iterate
+      if j = a then iterate
       if entries.j > 2020 then iterate
       if entries.a + entries.i + entries.j = 2020 then do
-        say "entry "a" and entry "i" and entry "j" add up to 2020"
-        say "the answer is "entries.a * entries.i * entries.j
-        say "Score:"tries"/"maxtries" ("100-tries/maxtries*100"%)"
+        say "[+] Solution Found!"
+        say "[+] WallTime: "time('E')" seconds"
+        say "[+] entry "a" and entry "i" and entry "j" add up to 2020"
+        say "[+] the answer is "entries.a * entries.i * entries.j
+        say "[+] Score:"tries"/"maxtries" ("100-tries/maxtries*100"%)"
         /* Comment below to see all solutions */
         exit
-
       end
       else
         tries = tries + 1
