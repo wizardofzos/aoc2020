@@ -1,4 +1,9 @@
 /* REXX */
+/****************************************/
+/* Advent of Code 2020 - Day 01, Part 1 */
+/* wizard@zdevops.com                   */
+/****************************************/
+
 
 /* Open our input file, then read into the entries. stem */
 "ALLOC FI(IN) DA('ZDO.AOC2020.D01.INPUT') SHR"
