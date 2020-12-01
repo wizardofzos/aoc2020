@@ -1,25 +1,29 @@
 /* REXX */
 
-entries. = ''
-entries.1 = 1721
-entries.2 = 979
-entries.3 = 366
-entries.4 = 299
-entries.5 = 675
-entries.6 = 1456
-entries.0 = 6
-
-
-"ALLOC FI(IN) DA('ZDO.AOC2020.REXX(D01P01IN)') SHR"
+/* Open our input file, then read into the entries. stem */
+"ALLOC FI(IN) DA('ZDO.AOC2020.D01.INPUT') SHR"
 "EXECIO * DISKR IN (STEM entries. FINIS"
 "FREE FI(IN)"
 
+
+/* Let's keep tab on performance :) */
+tries = 0
+maxtries = entries.0 * entries.0
 do i = 1 to entries.0
+  /* Read all entries */
+  if entries.i > 2020 then iterate        /* Skip this */
   do j = 1 to entries.0
-    if j = i then iterate
+    if j = i then iterate                 /* Skip this */
+    if entries.j > 2020 then iterate      /* And skip this */
     if entries.i + entries.j = 2020 then do
       say "entry "i" and entry "j" add up to 2020"
       say "the answer is "entries.i * entries.j
+      say "Score:"tries"/"maxtries" ("100-tries/maxtries*100"%)"
+      /* Comment below to see all solutions */
+      exit
+
     end
+    else
+      tries = tries + 1
   end
 end
