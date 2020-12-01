@@ -1,0 +1,25 @@
+/* REXX */
+
+entries. = ''
+entries.1 = 1721
+entries.2 = 979
+entries.3 = 366
+entries.4 = 299
+entries.5 = 675
+entries.6 = 1456
+entries.0 = 6
+
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.REXX(D01P01IN)') SHR"
+"EXECIO * DISKR IN (STEM entries. FINIS"
+"FREE FI(IN)"
+
+do i = 1 to entries.0
+  do j = 1 to entries.0
+    if j = i then iterate
+    if entries.i + entries.j = 2020 then do
+      say "entry "i" and entry "j" add up to 2020"
+      say "the answer is "entries.i * entries.j
+    end
+  end
+end
