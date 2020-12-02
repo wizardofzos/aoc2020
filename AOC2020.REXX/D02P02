@@ -1,0 +1,37 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 02/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D02.INPUT') SHR"
+"EXECIO * DISKR IN (STEM list. FINIS"
+"FREE FI(IN)"
+
+valids = 0
+do i = 1 to list.0
+  if validpass(list.i) = 1 then valids = valids + 1
+end
+
+say "Valid passwords: "valids
+
+exit
+
+validpass:
+  parse arg line
+  parse var line p1"-"p2" "char": "password
+  sum = 0
+  if substr(password,p1,1) = char then sum = sum + 1
+  if substr(password,p2,1) = char then sum = sum + 1
+  return sum
