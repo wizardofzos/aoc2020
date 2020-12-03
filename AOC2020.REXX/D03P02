@@ -1,0 +1,56 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 03/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+NUMERIC DIGITS 32
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D03.INPUT') SHR"
+"EXECIO * DISKR IN (STEM map. FINIS"
+"FREE FI(IN)"
+
+
+t1 = findtrees(1,1)
+t2 = findtrees(3,1)
+t3 = findtrees(5,1)
+t4 = findtrees(7,1)
+t5 = findtrees(1,2)
+
+say "1,1 =>"t1
+say "3,1 =>"t2
+say "5,1 =>"t3
+say "7,1 =>"t4
+say "1,2 =>"t5
+say "Answer: " t1 * t2 * t3 * t4 * t5
+
+exit
+
+findtrees:
+  parse arg r,d
+  /*  need to get to posy > map.0 */
+  posx = 1
+  trees = 0
+  do posy = 1+d  to map.0 by d
+    mapline = strip(map.posy)
+    width = length(mapline)
+    posx = posx + r           /* three to the right */
+    if posx > length(mapline) then do
+      posx = posx - length(mapline)
+    end
+    if substr(mapline, posx, 1) = '#' then do
+      trees = trees + 1
+    end
+  end
+  return trees

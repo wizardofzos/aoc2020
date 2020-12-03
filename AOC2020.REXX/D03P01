@@ -1,0 +1,40 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 03/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D03.INPUT') SHR"
+"EXECIO * DISKR IN (STEM map. FINIS"
+"FREE FI(IN)"
+
+
+r = 3                  /* the slope */
+posx = 1
+
+/*  need to get to posy > map.0 */
+trees = 0
+do posy = 2 to map.0
+  mapline = strip(map.posy)
+  width = length(mapline)
+  posx = posx + r           /* three to the right */
+  if posx > length(mapline) then do
+    posx = posx - length(mapline)
+  end
+  if substr(mapline, posx, 1) = '#' then do
+    trees = trees + 1
+  end
+end
+
+say "We've encountered "trees" trees"
