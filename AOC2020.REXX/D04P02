@@ -1,0 +1,139 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 04/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D04.INPUT') SHR"
+"EXECIO * DISKR IN (STEM pdata. FINIS"
+"FREE FI(IN)"
+
+/* Read the passports */
+plines. = ''
+plinec  = 0
+pline = ''
+do i = 1 to pdata.0
+  if strip(pdata.i) /= '' then pline = pline" "strip(pdata.i)
+  else do
+    plinec = plinec + 1
+    plines.plinec = pline
+    pline = ''
+    plines.0 = plinec
+  end
+end
+plinec = plinec + 1
+plines.plinec = pline
+pline = ''
+plines.0 = plinec
+
+
+valids = 0
+say "Read "plines.0" passports"
+do i = 1 to plines.0
+  x = passportvalid(plines.i)
+  if x = 255 | x = 254 then valids = valids + 1
+end
+say "Valid passports: "valids
+
+exit
+
+
+passportvalid:
+  parse arg pdata
+  sum = 0
+  do kvi = 1 to words(pdata)
+    /* binary rep of byr iyr eyr hgt hcl ecl pid cid */
+    /*               128 64  32  16  8   4   2   1   */
+    kv = word(pdata,kvi)
+    parse var kv k":"v
+    x. = 0
+    x.byr = 128
+    x.iyr = 64
+    x.eyr = 32
+    x.hgt = 16
+    x.hcl = 8
+    x.ecl = 4
+    x.pid = 2
+    x.cid = 1
+    sum = sum + x.k
+    /*
+    select
+      when k = 'byr' & v >= 1920 & v <= 2002 then sum = sum + 128
+      when k = 'iyr' & v >= 2010 & v <= 2020 then sum = sum + 64
+      when k = 'eyr' & v >= 2020 & v <= 2030 then sum = sum + 32
+      when k = 'hgt' & hgtok(v) then sum = sum + 16
+      when k = 'hcl' & hclok(v) then sum = sum + 8
+      when k = 'ecl' & eclok(v) then sum = sum + 4
+      when k = 'pid' & pidok(v) =  1 then sum = sum + 2
+      when k = 'cid' then sum = sum + 1
+      otherwise do
+                  say "invalid "k" ("v")"
+                  sum = sum + 256
+                end
+    end
+    */
+  end
+  return sum
+
+hgtok:
+  parse arg hgt
+  if substr(hgt,4,2) = 'cm' then do
+    h = substr(hgt,1,3)
+    if h >= 150 & h <= 193 then return 1
+    else return 0
+  end
+  else do
+    if substr(hgt,3,2) = 'in' then do
+      h = substr(hgt,1,2)
+      if h >= 59 & h <= 76 then return 1
+      else return 0
+    end
+    else return 0
+  end
+hclok:
+  parse arg hcl
+  if substr(hcl,1,1) = '#' then do
+    c = substr(hcl,2,6)
+    if datatype(c,'X') = 1 then return 1
+    else return 0
+  end
+  else return 0
+
+pidok:
+  parse arg pid
+  l = length(pid)
+  if l = 9 then do
+    if datatype(l,'N') = 1 then do
+      return 1
+    end
+    else do
+      say "PID "pid" invalid".
+      return 0
+    end
+  end
+  else
+    return 0
+
+eclok:
+  parse arg acl
+    select
+      when v = 'amb' then return 1
+      when v = 'blu' then return 1
+      when v = 'brn' then return 1
+      when v = 'gry' then return 1
+      when v = 'grn' then return 1
+      when v = 'hzl' then return 1
+      when v = 'oth' then return 1
+      otherwise return 0
+    end

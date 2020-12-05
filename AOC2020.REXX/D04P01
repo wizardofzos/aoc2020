@@ -1,0 +1,73 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 04/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D04.INPUT') SHR"
+"EXECIO * DISKR IN (STEM pdata. FINIS"
+"FREE FI(IN)"
+
+/* Read the passports */
+plines. = ''
+plinec  = 0
+pline = ''
+do i = 1 to pdata.0
+  if strip(pdata.i) /= '' then pline = pline" "strip(pdata.i)
+  else do
+    plinec = plinec + 1
+    plines.plinec = pline
+    pline = ''
+    plines.0 = plinec
+  end
+end
+plinec = plinec + 1
+plines.plinec = pline
+pline = ''
+plines.0 = plinec
+
+
+say "Read "plines.0" passports"
+
+valids = 0
+do i = 1 to plines.0
+  x = passportvalid(plines.i)
+  if x = 255 | x = 254 then valids = valids + 1
+end
+say "Valid passports: "valids
+
+exit
+
+
+passportvalid:
+  parse arg pdata
+  /* byr iyr eyr hgt hcl ecl pid cid */
+  /* 128  64  32  16   8   4   2   1 */
+  sum = 0
+  do kvi = 1 to words(pdata)
+    kv = word(pdata,kvi)
+    parse var kv k":"v
+    select
+        when k = 'byr' then sum = sum + 128
+        when k = 'iyr' then sum = sum +  64
+        when k = 'eyr' then sum = sum +  32
+        when k = 'hgt' then sum = sum +  16
+        when k = 'hcl' then sum = sum +   8
+        when k = 'ecl' then sum = sum +   4
+        when k = 'pid' then sum = sum +   2
+        when k = 'cid' then sum = sum +   1
+        otherwise           sum = 0
+    end
+  end
+  return sum
