@@ -1,0 +1,96 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 05/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D05.INPUT') SHR"
+"EXECIO * DISKR IN (STEM list. FINIS"
+"FREE FI(IN)"
+
+
+/* find my seat.... so get all seats... and sort? */
+/* we know max seatid = 864 from previous puzzle */
+seats. = " "
+seatc = 0
+do j = 1 to list.0
+  t = strip(list.j)
+  r = row(t)
+  c = col(t)
+  s = r * 8 + c
+  seatc = seatc + 1
+  seats.s = "X"  /* X = taken, so not mine */
+end
+
+seats.0 = 864
+do k = 1 to 864
+  if seats.k /= "X" then do
+    /* only if -1 and +1 are taken */
+    s1 = k - 1
+    s2 = k + 1
+    if seats.s1 = "X" & seats.s2 = "X" then
+      say "my seat id = "k
+  end
+end
+
+
+exit
+
+row:
+  parse arg part
+  /* part is the first 7 chars of seat-data */
+  startrow = 0
+  stoprow = 127
+  do i = 1 to 7
+    mid = ((startrow + stoprow) % 2)
+    h = substr(part,i,1)
+    if h = "F" then do
+      /* lower half, so decrement stop */
+      stoprow = mid
+    end
+    if h = "B" then do
+      /* upper half, so increment start */
+      startrow = mid + 1
+    end
+  end
+
+  if startrow = stoprow then return startrow
+  else do
+         say "Row Erro?? "part
+         return -1
+       end
+
+col:
+  parse arg part
+  /* part is the last 3 chars of seat-data */
+  startcol = 0
+  stopcol = 7
+  do i = 8 to 10
+    mid = ((startcol + stopcol) % 2)
+    h = substr(part,i,1)
+    if h = "L" then do
+      /* lower half, so decrement stop */
+      stopcol = mid
+    end
+    if h = "R" then do
+      /* upper half, so increment start */
+      startcol = mid + 1
+    end
+  end
+
+  if startcol = stopcol then return startcol
+  else do
+         say "Col Erro?? "part
+         return -1
+       end
