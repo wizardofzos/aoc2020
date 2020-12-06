@@ -56,14 +56,18 @@ say "Answer Part 1: "sum
 exit
 
 unq:
+  /* Ugliest uniquifier ever :)
+     Take the list of 'a-z' then for each see
+     if that char occurs in input string. If so,
+     add to result and goto next character */
   parse arg ll
   possibles = 'abcdefghijklmnopqrstuvwxyz'
   res = ''
   do pi = 1 to length(possibles)
     checkfor = substr(possibles,pi,1)
     do li = 1 to length(ll)
-      if substr(ll,li,1) = substr(possibles,pi,1) then do
-        res = res || substr(possibles,pi,1)
+      if substr(ll,li,1) = checkfor then do
+        res = res || checkfor
         leave
       end
     end

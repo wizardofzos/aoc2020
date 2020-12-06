@@ -77,6 +77,7 @@ unq:
         counted = counted + 1
       end
     end
-    if counted = ss then res = res || substr(possibles,pi,1)
+    /* only if all from group had this */
+    if counted = ss then res = res || checkfor
   end
   return res
