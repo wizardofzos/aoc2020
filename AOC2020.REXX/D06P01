@@ -1,0 +1,71 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 06/PART 1<  "
+say "                               "
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D06.INPUT') SHR"
+"EXECIO * DISKR IN (STEM list. FINIS"
+"FREE FI(IN)"
+
+groups. = ''
+groupc  = 0
+groups.0 = 0
+groupl  = ''
+
+/* create group data */
+do i = 1 to list.0
+  l = strip(list.i)
+  groupl = groupl || l
+  if l = "" then do
+    /* New Group starts */
+    groupc = groups.0 + 1
+    groups.groupc = groupl
+    groups.0 = groupc
+    groupl = ''
+  end
+end
+/* then we've last group */
+groupc = groups.0 + 1
+groups.groupc = groupl
+groups.0 = groupc
+groupl = ''
+
+
+/* check groups */
+sum = 0
+say "Groups: "groups.0
+do i = 1 to groups.0
+  uniques = unq(groups.i)
+  sum = sum + length(uniques)
+end
+
+say "Answer Part 1: "sum
+
+exit
+
+unq:
+  parse arg ll
+  possibles = 'abcdefghijklmnopqrstuvwxyz'
+  res = ''
+  do pi = 1 to length(possibles)
+    checkfor = substr(possibles,pi,1)
+    do li = 1 to length(ll)
+      if substr(ll,li,1) = substr(possibles,pi,1) then do
+        res = res || substr(possibles,pi,1)
+        leave
+      end
+    end
+  end
+  return res
