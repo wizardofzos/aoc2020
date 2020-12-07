@@ -1,0 +1,94 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 01/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+/* Get the rules in memory :) */
+"ALLOC FI(IN) DA('ZDO.AOC2020.D07.INPUT') SHR"
+"EXECIO * DISKR IN (STEM rules. FINIS"
+"FREE FI(IN)"
+
+/* find roots for shiny-gold */
+find.0 = 1
+find.1 = "shiny gold"
+findall = 1
+f = 1
+allroots = ""
+
+/* Prepare intermediate output file (JCL would be so much handier) */
+call syscalls 'ON'
+address syscall
+path = "/tmp/deleteme"
+'open' path,
+  O_rdwr+O_creat+O_trunc,
+  660
+fd = retval
+address ISPEXEC
+
+
+/* Finally, let's get ALL THE ROOTS for us */
+do while f <= findall
+  x = find_roots(find.f)
+  do w = 1 to words(x)
+    ww = word(x,w)
+    call write_fd ww                      /* wite to /tmp file */
+    findall = findall + 1                 /* yes, I know, it's */
+    fn = find.0 + 1                       /* changing the loop */
+    find.fn = translate(ww,' ','-')
+    find.0 = fn
+  end
+  f = f + 1
+end
+
+/* We now have all the roots (doubles included) in our file... */
+address syscall
+'close' fd
+call syscalls 'OFF'
+/* Let's do that sort trick :) */
+cmd = 'sort -u /tmp/deleteme | wc -l'
+b = bpxwunix(cmd,,so., se.)
+say "answer part1: "so.1
+/* Cleanup our file...*/
+cmd = 'rm /tmp/deleteme'
+b = bpxwunix(cmd,,so., se.)
+
+exit
+
+
+
+find_roots:
+  parse arg color
+  roots = ""
+  do i = 1 to rules.0
+    r = path_to(color, rules.i)
+    if r /= "" then do
+      r = translate(r,'-', ' ')
+      roots = roots" "r
+    end
+  end
+  return roots
+
+path_to:
+  parse arg color, rule
+  parse var rule root "bags contain" content "."
+  if pos(color, content) > 0 then return strip(root)
+  else return ""
+
+write_fd:
+ parse arg str
+ str = str || ESC_R || ESC_N
+ address syscall
+ 'write' fd 'str' length(str)
+ return
