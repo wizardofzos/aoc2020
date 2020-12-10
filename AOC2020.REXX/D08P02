@@ -1,0 +1,68 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 08/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D08.INPUT.FIX') SHR"
+"EXECIO * DISKR IN (STEM prog. FINIS"
+"FREE FI(IN)"
+
+do i = 1 to prog.0
+
+  accum = 0
+  ni    = 1
+  loopy = 0
+  execs = ''
+
+  do forever
+    parse var prog.ni OP" "AR" "muck
+    if i = ni then do
+      if OP = 'jmp' then OP = 'nop'
+      else if OP = 'nop' then OP = 'jmp'
+    end
+    if ni = prog.0 + 1 then do
+      say "Program Terminates Normally"
+      say "Accumulator Value = "accum
+      leave
+    end
+    do wi = 1 to words(execs)
+      if word(execs,wi) = ni then do
+        say "Would go into infinite loop, accumulator="accum
+        loopy = 1
+      end
+    end
+    execs = execs" "ni
+
+    if loopy = 1 then leave
+
+    select
+      when OP = "acc" then do
+                             accum = accum + AR
+                             ni = ni + 1
+                           end
+      when OP = "jmp" then do
+                             ni = ni + AR
+                           end
+      when OP = "nop" then do
+                             ni = ni + 1
+                           end
+      otherwise do
+                  say "Unknown operation ("OP")"
+                  leave
+                end
+    end
+  end
+end
+exit

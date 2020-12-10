@@ -1,0 +1,72 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 09/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D09.INPUT') SHR"
+"EXECIO * DISKR IN (STEM xmas. FINIS"
+"FREE FI(IN)"
+
+pre = 25
+
+do i = 1 to xmas.0
+  found = 0
+  if i <= pre then iterate
+  /* find two xmas.x/y with values added up to xmas.i */
+  do x = i-pre to i-1
+    if found = 1 then leave
+    do y = i-pre to i-1
+      if found = 1 then leave
+      if y = x then iterate
+      if xmas.x + xmas.y = xmas.i then do
+        /* found two that add up.... */
+        found = 1
+      end
+    end
+  end
+  if found = 0 then do
+    say "At index "i" we can't find two that add up"
+    say "the number = "xmas.i
+    invalid_number = xmas.i
+    leave
+  end
+end
+
+say "Now go and do part two for "invalid_number
+
+do i = 1 to xmas.0
+  sum = xmas.i
+  do j = i+1 to xmas.0
+    sum = sum + xmas.j
+    if sum > invalid_number then do
+      leave
+    end
+    if sum = invalid_number then do
+      say "We found the range from " i " to " j
+      smol = 10000000000000000000000000
+      larg = 0
+      do k = i to j
+        if xmas.k < smol then smol = xmas.k
+        if xmas.k > larg then larg = xmas.k
+      end
+      say "Small = "smol
+      say "Large = "larg
+      say "Answer part 2 = " smol + larg
+      exit
+    end
+  end
+end
+
+exit
