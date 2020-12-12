@@ -1,0 +1,123 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 11/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D11.INPUT') SHR"
+"EXECIO * DISKR IN (STEM layout. FINIS"
+"FREE FI(IN)"
+
+do i = 1 to layout.0
+  layout.i = strip(layout.i)
+  say layout.i
+end
+
+
+
+iters = 0
+
+do forever
+  iters = iters + 1
+  changed = 0
+  do y = 1 to layout.0
+    newrow = ''
+    do x = 1 to length(strip(layout.y))
+
+      newrow = newrow || getNext(x,y)
+    end
+    newlay.y = newrow
+  end
+  newlay.0 = layout.0
+  say "------Iter "iters" ---"
+  do jj = 1 to newlay.0
+    /* say newlay.jj */
+    if newlay.jj /= layout.jj then changed = 1
+  end
+
+  if changed = 0 then leave
+
+  do kkk = 1 to newlay.0
+    layout.kkk = newlay.kkk
+  end
+end
+
+
+say "FINAL REST"
+
+do i = 1 to layout.0
+  layout.i = strip(layout.i)
+  say layout.i
+end
+occupied = 0
+do y = 1 to layout.0
+  do x = 1 to length(layout.y)
+    if substr(layout.y,x,1) = '#' then occupied = occupied + 1
+  end
+end
+
+say "Answer Part 1 =" occupied
+exit
+
+
+getNext:
+  parse arg x,y
+  occs = 0
+  aboverow = y - 1
+  belowrow = y + 1
+  leftcol  = x - 1
+  rightcol = x + 1
+
+
+  if substr(layout.y,x,1) = '.' then return '.'
+
+  if aboverow > 0 then do
+    if leftcol > 0 then
+      if substr(layout.aboverow,leftcol,1) = "#" then occs = occs + 1
+    if substr(layout.aboverow,x,1) = "#" then occs = occs + 1
+    if rightcol <= length(layout.1) then
+      if substr(layout.aboverow,rightcol,1) = "#" then occs = occs + 1
+  end
+
+  if belowrow > 0 then do
+    if leftcol > 0 then
+      if substr(layout.belowrow,leftcol,1) = "#" then occs = occs + 1
+    if substr(layout.belowrow,x,1) = "#" then occs = occs + 1
+    if rightcol <= length(layout.1) then
+      if substr(layout.belowrow,rightcol,1) = "#" then occs = occs + 1
+  end
+
+  if leftcol > 0 then do
+    if substr(layout.y,leftcol,1) = "#" then occs = occs + 1
+  end
+
+  if rightcol <= length(strip(layout.1)) then do
+    if substr(layout.y,rightcol,1) = "#" then occs = occs + 1
+  end
+
+
+  if substr(layout.y,x,1) = "L" then do
+    if occs = 0 then return '#'
+    else return 'L'
+  end
+
+  if substr(layout.y,x,1) = "#" then do
+    if occs >= 4 then return 'L'
+    else return '#'
+  end
+
+/* A B C */
+/* D . E */
+/* F G H */
+
