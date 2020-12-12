@@ -1,0 +1,93 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 11/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D12.INPUT') SHR"
+"EXECIO * DISKR IN (STEM actions. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to actions.0
+  actions.i = strip(actions.i)
+end
+
+
+face = 'E'
+sx = 0
+sy = 0
+
+do i = 1 to actions.0
+  action = substr(actions.i,1,1)
+  val    = substr(actions.i,2,)
+  select
+    when action = "N" then do
+                             sy = sy - val
+                           end
+    when action = "S" then do
+                             sy = sy + val
+                           end
+    when action = "E" then do
+                             sx = sx + val
+                           end
+    when action = "W" then do
+                             sx = sx - val
+                           end
+    when action = "L" then do
+                             face = newface(face,val,'L')
+                           end
+    when action = "R" then do
+                             face = newface(face,val,'R')
+                           end
+    when action = "F" then do
+                             select
+                               when face = "N" then sy = sy - val
+                               when face = "S" then sy = sy + val
+                               when face = "E" then sx = sx + val
+                               when face = "W" then sx = sx - val
+                               otherwise say "Bad dir"
+                             end
+                           end
+    otherwise say "BAD ACTION"
+  end
+end
+
+say "Done went from (0,0) to ("sx","sy")"
+mdist = sx + sy
+say "Answer Part 1: "mdist
+
+
+exit
+
+
+newface:
+  parse arg curr,amt,dir
+  steps = amt / 90
+  if steps > 4 then say "eeeek, large L/R"
+  if dir = "L" then do
+    dirs = "N W S E"
+  end
+  if dir = "R" then do
+    dirs = "N E S W"
+  end
+  /* get current in dirs */
+  do cc = 1 to words(dirs)
+    if word(dirs,cc) = curr then leave
+  end
+  newdir = cc + steps
+  do while newdir > 4
+    newdir = newdir - 4
+  end
+  return word(dirs,newdir)

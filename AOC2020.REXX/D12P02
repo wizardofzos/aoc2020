@@ -1,0 +1,118 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 11/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D12.INPUT') SHR"
+"EXECIO * DISKR IN (STEM actions. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to actions.0
+  actions.i = strip(actions.i)
+end
+
+
+face = 'E'
+sx = 0
+sy = 0
+dwpx = 10
+dwpy = -1
+
+do i = 1 to actions.0
+  action = substr(actions.i,1,1)
+  val    = substr(actions.i,2,)
+  say "start: x="sx" y="sy" dwpx="dwpx" dwpy="dwpy
+  say "action: "actions.i
+  select
+    when action = "N" then do
+                             dwpy = dwpy - val
+                           end
+    when action = "S" then do
+                             dwpy = dwpy + val
+                           end
+    when action = "E" then do
+                             dwpx = dwpx + val
+                           end
+    when action = "W" then do
+                             dwpx = dwpx - val
+                           end
+    when action = "L" then do
+                             wcoords = newway(dwpx,dwpy,'L',val)
+                             dwpx = word(wcoords,1)
+                             dwpy = word(wcoords,2)
+                           end
+    when action = "R" then do
+                             wcoords = newway(dwpx,dwpy,'R',val)
+                             dwpx = word(wcoords,1)
+                             dwpy = word(wcoords,2)
+                           end
+    when action = "F" then do
+                             sx = (val * (dwpx)) + sx
+                             sy = (val * (dwpy)) + sy
+                           end
+    otherwise say "BAD ACTION"
+  end
+
+  say "InputParsed: x="sx" y="sy" dwpx="dwpx" dwpy="dwpy
+end
+
+say "Done went from (0,0) to ("sx","sy")"
+mdist = sx + sy
+say "Answer Part 2: "mdist
+
+
+exit
+
+
+
+newway:
+  parse arg cx,cy,dir,amt
+  steps = amt / 90
+  do while steps > 4
+    steps = steps - 4
+  end
+  /* can go 1,2,3 or 4 but 4 is same point, so....then return orig */
+  select
+    when steps = 1 then do
+                          if dir = 'L' then do
+                            nwpx = cy
+                            nwpy = -1 * cx
+                          end
+                          if dir = 'R' then do
+                            nwpx = -1 * cy
+                            nwpy = cx
+                          end
+                        end
+    when steps = 2 then do
+                            /* direction does not matter */
+                            nwpx = -1 * cx
+                            nwpy = -1 * cy
+                        end
+    when steps = 3 then do
+                            /* 3x L = 1x R and vice versa */
+                          if dir = 'L' then do
+                            nwpx = -1 * cy
+                            nwpy = cx
+                          end
+                          if dir = 'R' then do
+                            nwpx = cy
+                            nwpy = -1 * cx
+                          end
+                        end
+    otherwise say "BAD BAD BAD"
+  end
+  say "New WayPoint: "nwpx" "nwpy
+  return nwpx" "nwpy
