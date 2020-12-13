@@ -1,0 +1,122 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 13/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+numeric digits 64
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D13.INPUT') SHR"
+"EXECIO * DISKR IN (STEM notes. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to notes.0
+  notes.i = strip(notes.i)
+end
+
+notes.2 = translate(notes.2,' ',',')
+
+/* create list of busses that matter and the lag
+*/
+slowest_bus = 0
+busses. = ''
+busses.0 = 0
+do w = 1 to words(notes.2)
+  nb = busses.0 + 1
+  busid = word(notes.2,w)
+  if busid > slowest_bus then do
+                                slowest_bus = busid
+                              end
+  if busid = 'x' then iterate
+  busses.nb = busid || " " || w-1
+  busses.0 = nb
+end
+
+say "Slowest bus="slowest_bus
+/* We now have list of the busses and their lag */
+
+/* sort slow to fast                                                    */
+call sortStem "comp1"
+/* Thanks to                                                            */
+/* mainframeperformancetopics.com/2020/01/04/sorting-in-rexx-made-easy/ */
+/*                                                                      */
+
+/* and print once more */
+do i = 1 to busses.0
+  say busses.i
+end
+
+start = 0
+jump = 1
+do i = 1 to busses.0
+  say "Checking from "start" in steps of "jump
+  ts = start
+  do forever
+    parse var busses.i busid " " lag
+    /* say "BusID: "busid" with lag "lag */
+    if  (ts + lag) // busid      = 0 then do
+      /* Jumps as much as we can.....*/
+      start = ts
+      jump = jump * busid
+      say "Bus "busses.i "fails check from "start" with steps of "jump
+      leave
+    end
+    ts = ts + jump
+  end
+end
+
+say "At timestamp "ts" all is well :) "
+
+exit
+
+comp1: procedure
+parse arg x,y
+
+/* Calculate lengths of second word of x and y */
+lx=word(x,1)
+ly=word(y,1)
+
+select
+when lx=ly then return 0
+when lx>ly then return -1
+otherwise return 1
+end
+
+sortStem:
+parse arg comparison_routine
+flip_flop=0
+do i=busses.0 to 1 by -1
+  flip_flop=1
+  do j=1 to i-1
+    /* Decide whether to swap */
+    interpret "compRes="comparison_routine"('"busses.i"','"busses.j"')"
+    if compRes<0 then do
+      should_swap=1
+    end
+    else do
+      should_swap=0
+    end
+
+    if should_swap=1 then do
+      /* Swap values */
+      xchg=busses.j
+      busses.j=busses.i
+      busses.i=xchg
+
+      flip_flop=0
+    end
+  end
+end
+return
