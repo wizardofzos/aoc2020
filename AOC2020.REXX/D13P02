@@ -1,0 +1,86 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 13/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+say "This will solve it (eventually)"
+numeric digits 64
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D13.INPUT.TEST') SHR"
+"EXECIO * DISKR IN (STEM notes. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to notes.0
+  notes.i = strip(notes.i)
+end
+
+notes.2 = translate(notes.2,' ',',')
+timestamp = 1
+
+busvals. = 0
+busvals.0 = 0
+maxbusval = 0
+maxbuslag = 0
+
+do b = 1 to words(notes.2)
+  bid = word(notes.2,b)
+  nbus = busvals.0 + 1
+  if bid /= 'x' then do
+    busvals.nbus = bid
+  end
+  if bid > maxbusval then do
+                            maxbusval = bid
+                            maxbuslag = b - 1
+                          end
+  busvals.0 = nbus
+end
+
+
+say "biggest bus="maxbusval
+say "lag ="maxbuslag
+n = 1
+t = 1
+do forever
+
+  t = 413*n + 350
+
+
+  printit = t // 100000
+  if printit = 0 then say t
+  tok = 1
+  c1 = t / busvals.1
+  if datatype(c1,'W') = 0 then do
+    tok = 0
+    n = n + 1
+    iterate
+  end
+  do b = 2 to busvals.0
+    if busvals.b = 0 then iterate
+    cycles = (t + b - 1) / busvals.b
+    if datatype(cycles,"W") = 0 then do
+      tok = 0
+      iterate
+    end
+  end
+  if tok = 1 then do
+    say "finished at t="t
+    exit
+  end
+  n = n + 1
+end
+
+exit
+
