@@ -1,0 +1,52 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 13/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D13.INPUT')      SHR"
+"EXECIO * DISKR IN (STEM notes. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to notes.0
+  notes.i = strip(notes.i)
+end
+
+mytime = notes.1
+
+say "My earliest departure = "mytime
+notes.2 = translate(notes.2,' ',',')
+deptime = 100000000000000
+selbus  = 0
+do b = 1 to words(notes.2)
+  bus = word(notes.2,b)
+  if bus = 'x' then do
+    iterate
+  end
+  say "Checking Bus "bus
+  do j = 1 to 10000000000
+    dep = j * bus
+    if j * bus >= mytime then do
+      say "Could take bus on "j*bus
+      if dep < = deptime then do
+        deptime = dep
+        selbus = bus
+      end
+      leave
+    end
+  end
+end
+
+say "Answer part 1 = " selbus * (deptime - mytime)
