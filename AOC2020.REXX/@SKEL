@@ -11,7 +11,22 @@ say "   / _ \| | | | |     __) | | | |__) | | | |  "
 say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
 say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
 say "                                              "
-say "                             >DAY 01/PART 1<  "
+say "                             >DAY DD/PART P<  "
 say ""
 /*------------------------------------------------*/
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D14.INPUT.TEST')  SHR"
+"EXECIO * DISKR IN (STEM prog. FINIS"
+"FREE FI(IN)"
+
+/* Strip bagger */
+do i = 1 to prog.0
+  prog.i = strip(prog.i)
+end
+
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
 
