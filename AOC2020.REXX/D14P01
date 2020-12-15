@@ -1,0 +1,85 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 14/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+numeric digits 64
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D14.INPUT')      SHR"
+"EXECIO * DISKR IN (STEM prog. FINIS"
+"FREE FI(IN)"
+
+
+memory. = 'X'                  /* Maybe not smart?*/
+mask    = ''                   /* always mask is line 1 */
+himem   = 0
+
+/* Strip bagger */
+do i = 1 to prog.0
+  prog.i = strip(prog.i)
+  parse var prog.i command " = " val
+  select
+    when command = "mask" then do
+      /* set mask */
+      say "mask --> "val
+      mask = val
+    end
+    otherwise do
+                parse var command "mem[" addr "]"
+                /* store at addr using mask */
+                /*say "Need to store "val" at mem address "addr
+                say "value (nomask):" val */
+                storeVal = applyMask(mask,val)
+                /*say "value (masked):" applyMask(mask,val)*/
+                memory.addr = storeVal
+                if addr > himem then himem = addr
+              end
+  end
+end
+
+memsum = 0
+do jj = 1 to himem
+  if memory.jj /= 'X' then do
+    say "addr:" jj" -> "memory.jj
+    memsum = memsum + memory.jj
+  end
+end
+
+
+say "Answer part 1 = " memsum
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+
+applyMask:
+  parse arg intmask,val
+  hexval = d2x(val)
+  binval = x2b(hexval)
+  /* mask is 36 bits wide... */
+  v = right(binval,36,0)
+  newval = ''
+  do mm = 1 to length(intmask)
+    select
+      when substr(intmask,mm,1) = '1' then
+        newval = newval || 1
+      when substr(intmask,mm,1) = '0' then
+        newval = newval || 0
+      otherwise newval = newval || substr(v,mm,1)
+    end
+  end
+  decres = x2d(b2x(newval))
+  return decres
