@@ -1,0 +1,157 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "  /*--------------------------------------------[REXX] "
+say "  | Advent of Code 2020          wizard@zdevops.com  | "
+say "  +-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 14/PART 2<  "
+say ""
+/*------------------------------------------------*/
+say "Filling the memory via input file."
+say "I ain't happy either, takes about a 30 seconds.."
+
+numeric digits 128
+imstarting = TIME()
+"ALLOC FI(IN) DA('ZDO.AOC2020.D14.INPUT.TEST.PART2') SHR"
+"EXECIO * DISKR IN (STEM prog. FINIS"
+"FREE FI(IN)"
+
+
+memory. = 0
+fmem. = 0
+fmem.0 = 0
+mask    = ''                   /* always mask is line 1 */
+himem   = 0
+masks = 0                      /* 100 in my challenge set */
+sum = 0
+
+/* Strip bagger */
+do i = 1 to prog.0
+  prog.i = strip(prog.i)
+  parse var prog.i command " = " val
+  select
+    when command = "mask" then do
+      /* set mask */
+      masks = masks + 1
+      if possibilities = "POSSIBILITIES" then diff = 0
+      else diff = possibilities
+      diff = "["TIME()"]("diff")"
+      if masks // 5 = 0 then
+        say "["diff"] "right(masks,3,'0')"% done"
+      mask = val
+    end
+    otherwise do
+                parse var command "mem[" addr "]"
+                /* store at addr using mask */
+                /* mask can explode abount of mem addresses... */
+                /* don't forget highest mem address.... */
+                alist    = storeMem(addr,val,mask)
+                do aa = 1 to words(alist)
+                  memaddr = word(alist,aa)
+                  /* check for highest memory address */
+                  if memaddr > himem then himem = memaddr
+                  /* if we have this memory address, substract its value */
+                  if memory.memaddr > 0 then do
+                    sum = sum - memory.memaddr
+                    /* and store current value there for future substracts */
+                    memory.memaddr = val
+                    sum = sum + val
+                  end
+                  else do
+                    /* We're not in memory yet, store and add to sum */
+                    memory.memaddr = val
+                    sum = sum + val
+                  end
+                end
+              end
+  end
+end
+
+say "."
+
+say ""
+say ""
+say ""
+say "Done..."
+say "Started: "imstarting
+say "Finished:"TIME()
+say ""
+say "Answer part 2--->" sum
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+
+storeMem:
+  parse arg where,what,memmask
+  hexval = d2x(where)
+  binval = x2b(hexval)
+  /* mask is 36 bits wide... */
+  v = right(binval,36,0)
+  newval = ''
+  addrs. = 0
+  addr.0 = 0
+
+  do mm = 1 to length(memmask)
+    select
+      when substr(memmask,mm,1) = '1' then
+        newval = newval || 1
+      when substr(memmask,mm,1) = '0' then
+        newval = newval || substr(v,mm,1)
+      when substr(memmask,mm,1) = 'X' then
+        newval = newval || 'X'
+      otherwise newval = newval || substr(v,mm,1)
+    end
+  end
+
+  /* newval is the masked memory address */
+
+  xpos. = 0
+  xpos.0 = 0
+
+  do mmm = 1 to length(newval)
+    if substr(newval,mmm,1) = 'X' then do
+      npx = xpos.0 + 1
+      xpos.npx = mmm
+      xpos.0 = npx
+    end
+  end
+
+  possibilities = 2 ** xpos.0
+
+  do kkk = 0 to possibilities - 1 /* because from 0-7 for example */
+    bitstring = '000000000000' || x2b(d2x(kkk)) /* ugly */
+    /* get rid of 0 overflow at start */
+    nozerostart = substr(bitstring,length(bitstring)-xpos.0+1,xpos.0)
+    toadd = ''
+    valpos = 1
+    do a = 1 to length(newval)
+      if substr(newval,a,1) = 'X' then do
+        toadd = toadd || substr(nozerostart,valpos,1)
+        valpos = valpos + 1
+      end
+      else
+        toadd = toadd || substr(newval,a,1)
+    end
+    na = addrs.0 + 1
+    addrs.na = toadd
+    addrs.0 = na
+  end
+
+  resval = ''
+  do nnn = 1 to addrs.0
+    resval = resval || ' ' || x2d(b2x(addrs.nnn))
+  end
+  /* decres = x2d(b2x(newval))  */
+  return resval
