@@ -1,0 +1,84 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "  /*--------------------------------------------[REXX] "
+say "  | Advent of Code 2020          wizard@zdevops.com  | "
+say "  +-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 16/PART 1<  "
+say ""
+/*------------------------------------------------*/
+"ALLOC FI(IN) DA('ZDO.AOC2020.D18.INPUT') SHR"
+"EXECIO * DISKR IN (STEM inp. FINIS"
+"FREE FI(IN)"
+
+
+numeric digits 30
+
+answer = 0
+do i = 1 to inp.0
+  inp.i = strip(inp.i)
+  answer = answer + solve(inp.i)
+end
+
+say "Answer --> "answer
+
+exit
+
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+
+
+solve: procedure
+  arg puzzle
+  /* find all (x o y) pairs and easysolve those */
+  /* 1 * (2 + 3) ==> 1 * 5 */
+  if pos('(',puzzle) = 0 then return easysolve(puzzle)
+  /* chop it up then solve partial */
+  firstopen = pos('(',puzzle)
+  firstclose = pos(')',puzzle)
+  /* warning! a ( can be between firstopen en firstclose... */
+  extra = pos('(',puzzle,firstopen+1)
+  if extra < firstclose & extra > 0 then do
+    /* solve that bit */
+    part1 = substr(puzzle,1,extra-1)
+    close = pos(')',puzzle,extra)
+    part2 = substr(puzzle,close+1)
+    subp  = substr(puzzle,extra+1,close-extra-1)
+    s2 = solve(subp)
+    return solve(part1 || s2 || part2)
+  end
+  else do
+    part1 = substr(puzzle,1,firstopen-1)
+    part2 = substr(puzzle,firstclose+1)
+    subpuzzle = substr(puzzle,firstopen+1,firstclose-firstopen-1)
+    s1 = solve(subpuzzle)
+    return solve(part1 || s1 || part2)
+  end
+
+easysolve: procedure
+  arg puzzle
+  parse var puzzle val1 op val2 rest
+  if rest = '' then do
+    interpret 'result= 'val1 op val2
+    return result
+  end
+  else do
+    partial = easysolve(val1" "op" "val2)
+    solution = easysolve(partial" "rest)
+    return solution
+  end
+
+

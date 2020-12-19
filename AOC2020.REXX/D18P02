@@ -1,0 +1,101 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "/*--------------------------------------------[REXX] "
+say "| Advent of Code 2020          wizard@zdevops.com  | "
+say "+-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 18/PART 2<  "
+say ""
+/*------------------------------------------------*/
+
+_t1 = TIME()
+"ALLOC FI(IN) DA('ZDO.AOC2020.D18.INPUT') SHR"
+"EXECIO * DISKR IN (STEM inp. FINIS"
+"FREE FI(IN)"
+
+
+/* We have large answers.... but not this large lol */
+numeric digits 30
+
+
+answer = 0
+do i = 1 to inp.0
+  inp.i = strip(inp.i)
+  answer = answer + stksolve(inp.i)
+end
+
+say "Answer --> "answer
+
+say ""                               /*      EVER */
+say "+--------------------------------------------------+ "
+say "| Started  : "_t1"                              | "
+say "| Finished : "TIME()"                              | "
+say "\*--------------------------------------------[DONE] "
+
+
+exit
+
+
+stksolve: procedure
+  arg string
+  /* these are our stacks (nesting levels) */
+  stack. = ''
+  /* current stack/nesting level = 1 */
+  stklvl = 1
+
+  do i = 1 to length(string)
+    /* parse all chars in the input string */
+    o = substr(string,i,1)
+
+    /* When we see a '(' a new stack/nesting level has started   */
+    if o = "(" then do
+      stklvl = stklvl + 1             /* increment level counter */
+      stack.stklvl = ''               /* (re)-initialize stack   */
+      iterate                         /*      ..... and carry on */
+    end
+
+    /* When we see a ')' the current stack/nesting is finished   */
+    if o = ")" then do
+      ans = stackit(stack.stklvl)     /* better solve this part  */
+      stack.stklvl = ans              /* and stick in our stack  */
+      stklvl = stklvl - 1             /* back down one level     */
+      /* add the answer to the stack/nesting level below         */
+      stack.stklvl = stack.stklvl || ans
+      iterate                         /*     ...... and carry on */
+    end
+
+    /* If no ( or ) we add the char to our current stack/nesting */
+    stack.stklvl = stack.stklvl || o
+  end
+
+  /* Whoa! We're done! */
+  finally = stackit(stack.1)       /* now solve this simple task */
+  return finally
+
+stackit: procedure
+  /* Get our input string (no nesting due to stksolve !!         */
+  arg stk
+  /* This bit broke me.... I want to do plus first, so I parse   */
+  parse var stk some "*" other      /* on the * and NOT(!) on +  */
+
+  if some = '' | other = '' then do
+    /* if we cannot parse this as a 'x * y' string it's all + !! */
+    interpret 'r='stk        /* (ab)use interpret to evaluate it */
+    return r                 /*            and return that value */
+  end
+  /* Otherwise, just recurse the two sides of the operation      */
+  some1 = stackit(some)               /* going once              */
+  other1 = stackit(other)             /*      going twice...     */
+  /* Here's our friend interpret again...                        */
+  interpret 'r = ' some1 '*' other1
+  return r      /* pass the result to caller, might be itself :) */
