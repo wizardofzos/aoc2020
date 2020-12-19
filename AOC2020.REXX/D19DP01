@@ -1,0 +1,186 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "/*--------------------------------------------[REXX] "
+say "| Advent of Code 2020          wizard@zdevops.com  | "
+say "+-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 19/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+_t1 = TIME()
+
+"ALLOC FI(IN) DA('ZDO.AOC2020.D19.INPUT.TEST') SHR"
+"EXECIO * DISKR IN (STEM inp. FINIS"
+"FREE FI(IN)"
+
+/* We have large answers.... but not this large lol */
+numeric digits 30
+
+
+/* our rules placeholder */
+rule. = ''
+rulecount = 0
+
+message.  = ''
+message.0 = 0
+
+/* parse all the input stuff */
+do i = 1 to inp.0
+  if parseInput(inp.i) > 0 then do
+    say "Broken Input Parser, abort!"
+    exit
+  end
+end
+
+
+do i = 0 to rulecount - 1
+  say "Rule "i"("rule.i")-->"decompressRule(i)
+end
+
+
+do i = 1 to message.0
+  say message.i
+  d = decompressRule(0)
+  /* if parseDecompressed(d,message.i) = 1 then say " OK " */
+  p = allPossible(d,message.i)
+end
+
+
+say ""                               /*      EVER */
+say "+--------------------------------------------------+ "
+say "| Started  : "_t1"                              | "
+say "| Finished : "TIME()"                              | "
+say "\*--------------------------------------------[DONE] "
+
+
+exit
+
+
+parseInput: procedure expose rule. rulecount message.
+  parse arg in
+  in = strip(in)
+  parse var in rulenum ":" ruletext
+  if ruletext = '' then do
+    /* This is not a rule line but a dataline */
+    if in /= '' then do
+      nm = message.0 + 1
+      message.nm = in
+      message.0 = nm
+    end
+  end
+  else do
+    parse var ruletext '"' char '"'
+    if char /= '' then
+      /* just add the char to the rule */
+      rule.rulenum = char
+    else
+      /* probably need to further do something here ;) */
+       rule.rulenum = ruletext
+
+    rulecount = rulecount + 1
+  end
+
+  return 0
+
+
+
+decompressRule: procedure expose rule. rulecount
+  parse arg r
+  /* three options :  - it's a char (return it) / or a single rule
+                      - it's a 'or definition' (decompress both!)
+                      - it's a sequence of rules (decompress all!)
+  */
+  if words(rule.r) = 1 then do
+    if datatype(word(rule.r,1)) = "CHAR" then
+      return word(rule.r,1)
+    else
+      return decompressRule(word(rule.r,1))
+  end
+
+  if pos('|',rule.r) = 0 then do
+    res = ''
+    do rwi = 1 to words(rule.r)
+      res = res","decompressRule(word(rule.r,rwi))
+    end
+    return strip(res,'L',',')
+  end
+  else do
+    parse var rule.r opta "|" optb
+    resa = ''
+    resb = ''
+    do rwi = 1 to words(opta)
+      resa = resa" "decompressRule(word(opta,rwi))
+      resb = resb" "decompressRule(word(optb,rwi))
+    end
+    resa = strip(resa)
+    resb = strip(resb)
+    return "("resa"|"resb")"
+  end
+
+  /* catch all */
+  return "Not implemented"
+
+parseDecompressed: procedure
+  parse arg decom,text
+  ltxt = length(text)
+  parse var decom match "," rest
+  lmatch = length(match)
+  say "we matched "match " and the rest as "rest
+  if substr(text,1,lmatch) = match then do
+    say "It totally matches!!!!"
+    say "we should now check the rest "
+    return parseDecompressed(rest,substr(text,lmatch+1))
+  end
+  else do
+    say "Hmmm......no match (yet) for "
+    say "match = "match
+    say "text  = "text
+    possibles = allPossible(match,text)
+    return 0
+  end
+  return 1
+
+allPossible: procedure
+  parse arg match,text
+  res. = ''
+  res.0 = 0
+  stack. = ''
+  stacklvl = 1
+
+  do i = 1 to length(match)
+    if substr(match,i,1) = '(' then do
+      say "new stack"
+      stacklvl = stacklvl + 1
+      stack.stacklvl = ''
+      iterate
+    end
+
+    if substr(match,i,1) = ')' then do
+      say "finished stack "stacklvl
+      s = stack.stacklvl
+      stacklvl = stacklvl - 1
+      stack.stacklvl = stack.stacklvl || s || ">"
+      iterate
+    end
+
+    stack.stacklvl = stack.stacklvl || substr(match,i,1) || ">"
+
+  end
+
+  say "***********************************************"
+  say "is stack 1 left??"
+  say stack.1
+  say text
+  say "***********************************************"
+  return 1
