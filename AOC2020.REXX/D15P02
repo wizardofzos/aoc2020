@@ -1,0 +1,87 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "  /*--------------------------------------------[REXX] "
+say "  | Advent of Code 2020          wizard@zdevops.com  | "
+say "  +-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY Dd/PART P<  "
+say ""
+/*------------------------------------------------*/
+/* less naive */
+numeric digits 64
+
+debug = 0
+
+inp = "19,0,5,1,10,13"
+
+current_turn = 0
+shouted      = nothing
+toshout      = nothing
+mem.         = 0          /* this is our memory on last turn */
+
+ha = translate(inp,' ',',')  /* space for every comma in nmbrs */
+maxturn = words(ha)
+shouted = word(ha, maxturn)/* get last word ! */
+
+say "[.] Preloading memory, current turn="current_turn
+do hb = 1 to words(ha)
+  hc = word(ha,hb)
+  say "hb="hb",hc="hc",hd="hd
+  mem.hc =  hb+1
+end
+
+say "[+] Memory pre-loaded, current turn="current_turn
+/* print the memory map */
+do mm = 0 to 20
+  say "        "mm"  --> "mem.mm
+end
+say "[ ]   Current Turn = "current_turn
+
+current_turn = maxturn + 1
+if debug = 1 then
+say "[+] Playing game from turn "current_turn
+
+do t = current_turn to 30000000
+  if debug = 1 | t // 100000 = 0 then do
+    pct = t/30000000
+    say " === TURN "t"("pct") ==="
+    /* what did we say previous turn? */
+    say 'We heard: 'shouted
+  end
+
+  ha = t - mem.shouted
+
+  if debug = 1 then
+  say "heard before at ="mem.shouted
+
+  if ha < t then do
+    newshout = t - mem.shouted
+    /* We've seen 'shouted' about 'ha' turns ago. */
+    mem.shouted = t
+    shouted = newshout
+    if debug = 1 then
+    say "   so shout "shouted" and store last torn for it as" t
+  end
+  else do
+    /*we need to shout something... */
+    if debug then
+    say "no see "shouted
+
+    mem.shouted = t
+    shouted = 0
+    if debug = 1 then
+    say "   so shout "shouted" and store last torn for it as" t
+  end
+end
+say shouted
+exit

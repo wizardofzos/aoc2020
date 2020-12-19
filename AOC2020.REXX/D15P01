@@ -1,0 +1,73 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "  /*--------------------------------------------[REXX] "
+say "  | Advent of Code 2020          wizard@zdevops.com  | "
+say "  +-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY Dd/PART P<  "
+say ""
+/*------------------------------------------------*/
+numeric digits 64
+prime = "0,3,6"
+
+/* as words */
+nmbrs = translate(prime,' ' ,',')
+
+say "Starting naive approach "TIME()
+/* but reverse it */
+nmbrs = "13 10 1 5 0 19"
+do t = 7 to 2020
+  heard = 0
+  do w = 2 to words(nmbrs)
+    if word(nmbrs,w) = word(nmbrs,1) then do
+      nmbrs=w-1" "nmbrs
+      heard = 1
+      leave
+    end
+  end
+  if heard = 0 then do
+    nmbrs = 0" "nmbrs
+  end
+  if t // 500 = 0 then
+  say "Turn "t", shout "word(nmbrs,1)" at "TIME()
+end
+
+say "Finished                "TIME()
+
+say word(nmbrs,1)
+
+exit
+
+
+
+
+next:
+  parse arg said
+  ww = words(said)
+  /* get last word said */
+  last = word(said,ww)
+  if wordpos(last, said) < ww then do
+    rev = reverse(said)
+    me = wordpos(last,rev)
+    ppos = wordpos(last,rev,2)
+    return ppos - me
+  end
+  else do
+    return 0
+
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+

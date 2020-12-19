@@ -1,0 +1,58 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say " wizard@zdevops.com                           "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 14/PART 2<  "
+say ""
+/*------------------------------------------------*/
+numeric digits 33
+say "File created in B-variant"
+"ALLOC FI(SORTIN) DA('ZDO.AOC2020.D14.OUT') SHR"
+
+
+"ALLOC FI(SYSIN) NEW TR SPACE(10,10) RECFM(F B) LRECL(80)"
+"ALLOC FI(SORTOUT) NEW TR SPACE(30,45) RECF (F B) LRECL(80)"
+"ALLOC FI(SYSOUT) DA(*)"
+/* Get the sorter going. looks like line below */
+/* 123456789.123456789.123456789.123456789. */
+/* 3696540153;000000000000001;276  */
+push " OPTION VLSHRT VLCMP"
+"EXECIO 1 DISKW SYSIN"
+push " SORT FIELDS=(1,16,CH,A)"
+"EXECIO 1 DISKW SYSIN (FINIS"
+ADDRESS LINKMVS ICEMAN
+say rc
+"EXECIO * DISKR SORTOUT (stem sorted. FINIS"
+"FREE FI(SYSIN,SORTIN,SORTOUT)"
+
+/* Now we have them all sorted? */
+oldmem = 0
+olditer = 0
+addval = 0
+sum = 0
+i = 1
+
+do i = 1 to sorted.0
+  parse var sorted.i mem";"iter";"val muck
+  if mem /= oldmem then do
+    sum = sum + val
+    oldmem = mem
+  end
+end
+say sum
+
+
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+

@@ -1,0 +1,109 @@
+/*--------------------------------------------[REXX]
+| Advent of Code 2020          wizard@zdevops.com  |
++-------------------------------------------------*/
+say ""                               /*      BEST */
+say ""                               /*  ISPF-CLS */
+say ""                               /*      EVER */
+say "  /*--------------------------------------------[REXX] "
+say "  | Advent of Code 2020          wizard@zdevops.com  | "
+say "  +-------------------------------------------------*/ "
+say "                                              "
+say "     _    ___   ____ ____   ___ ____   ___    "
+say "    / \  / _ \ / ___|___ \ / _ \___ \ / _ \   "
+say "   / _ \| | | | |     __) | | | |__) | | | |  "
+say "  / ___ \ |_| | |___ / __/| |_| / __/| |_| |  "
+say " /_/   \_\___/ \____|_____|\___/_____|\___/   "
+say "                                              "
+say "                             >DAY 16/PART 1<  "
+say ""
+/*------------------------------------------------*/
+
+"ALLOC FI(IN) PATH('/prj/repos/aoc2020/in/d16') FILEDATA(TEXT)"
+"EXECIO * DISKR IN (STEM inp. FINIS"
+"FREE FI(IN)"
+
+
+your_ticket = ''
+nearby. = ''
+nearby.0 = 0
+
+reqfield. = ''
+reqfield.0 = 0
+reqrule. = ''
+reqrule.0 = 0
+
+/* So we get x lines of 'field' and 'requirements' (field: n-n or n-n)
+   then a blank line.
+   then our ticket (two line)
+   then nearby tickets
+*/
+state = "REQUIREMENTS"
+do i = 1 to inp.0
+  inp.i = strip(inp.i)
+  if inp.i = "" then state = "NONE"
+  if state = "REQUIREMENTS" then do
+    parse var inp.i what":"rules
+    parse var rules f" or "s
+    parse var f flo"-"fhi
+    parse var s slo"-"shi
+    nr = reqfield.0 + 1
+    reqfield.nr = what
+    reqrule.nr = flo" "fhi" "slo" "shi
+    reqfield.0 = nr
+    reqrule.0 = nr
+  end
+
+  if state = "YOUR" then do
+    your_ticket = translate(inp.i,' ',',')
+  end
+
+  if state = "NEARBY" then do
+    nn = nearby.0 + 1
+    nearby.nn = translate(inp.i,' ',',')
+    nearby.0 = nn
+  end
+
+  if inp.i = "your ticket:" then state = "YOUR"
+  if inp.i = "nearby tickets:" then state = "NEARBY"
+end
+
+
+if 1 = 1 then do
+  /* print input via 1 = 1 */
+  say "your ticket = "your_ticket
+  say "rules are"
+  do i = 1 to reqrule.0
+    say reqfield.i" -> "reqrule.i
+  end
+  say "nearby tickets"
+  do i = 1 to nearby.0
+    say nearby.i
+  end
+end
+
+p1 = 0
+
+do t = 1 to nearby.0
+  matchcount = 0
+  /* nearby.t = "val1 val2 .." */
+  do vi = 1 to words(nearby.t)
+    found = 0
+    v = word(nearby.t,vi)
+    do r = 1 to reqrule.0
+      parse var reqrule.r alo ahi blo bhi
+      if (v >= alo & v <= ahi ) | ( v >= blo & v <= bhi) then do
+        matchcount = matchcount + 1
+        found = 1
+        leave
+      end
+    end
+    if found = 0 then p1 = p1 + v
+  end
+end
+
+say "Answer part 1 :"p1
+/*------------------------------------------------*/
+say "                 E N D E D                    "
+say "----------------------------------------------"
+exit
+
